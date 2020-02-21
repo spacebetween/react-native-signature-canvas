@@ -31,12 +31,15 @@ class SignatureView extends Component {
 
   constructor(props) {
     super(props);
-    const { descriptionText, clearText, confirmText, webStyle, customHtml, autoClear, imageType } = props;
+
     this.state = {
       base64DataUrl: props.dataURL || null,
       isLoading: true,
     };
+  };
 
+  getSource = () => {
+    const { descriptionText, clearText, confirmText, webStyle, customHtml, autoClear, imageType } = this.props;
     let injectedJavaScript = injectedSignaturePad + injectedApplication;
     const htmlContentValue = customHtml ? customHtml : htmlContent;
     injectedJavaScript = injectedJavaScript.replace('<%autoClear%>', autoClear);
@@ -46,9 +49,8 @@ class SignatureView extends Component {
     html = html.replace('<%description%>', descriptionText);
     html = html.replace('<%confirm%>', confirmText);
     html = html.replace('<%clear%>', clearText);
-
-    this.source = { html };
-  };
+    return { html };
+  }
 
   getSignature = e => {
     const { onOK, onEmpty } = this.props;
@@ -65,11 +67,13 @@ class SignatureView extends Component {
   };
 
   render() {
+    const source = this.getSource();
+
     return (
       <View style={styles.webBg}>
         <WebView
           useWebKit={true}
-          source={this.source}
+          source={source}
           onMessage={this.getSignature}
           javaScriptEnabled={true}
           onError={this.renderError}
